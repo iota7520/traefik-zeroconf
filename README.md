@@ -66,7 +66,7 @@ Use the provided `.env.sample` file as a template to create your own configurati
 Run the following shell commands to deploy Traefik:
 
 ```shell
-git clone https://github.com/traefik-zeroconf.git
+git clone https://github.com/antoine75020/traefik-zeroconf.git
 cd traefik-zeroconf
 touch acme.json
 sudo chmod 600 acme.json
