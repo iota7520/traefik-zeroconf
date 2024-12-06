@@ -1,0 +1,45 @@
+services:
+  traefik:
+    image: traefik:latest
+    container_name: traefik
+    hostname: traefik
+    restart: always
+    command:
+      - --log.level=INFO
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.web.http.redirections.entryPoint.to=websecure
+      - --entrypoints.web.http.redirections.entryPoint.scheme=https
+      - --entrypoints.web.http.redirections.entrypoint.permanent=true
+      - --api.dashboard=true
+      - --providers.docker.watch=true
+      - --providers.docker.network=traefik
+      - --certificatesresolvers.lets-encrypt.acme.tlschallenge=true
+      - --certificatesresolvers.lets-encrypt.acme.email=$ADMIN_EMAIL
+      - --certificatesresolvers.lets-encrypt.acme.storage=./acme.json
+      - --serversTransport.insecureSkipVerify=true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./acme.json:/acme.json
+    labels:
+      - traefik.http.routers.traefik.rule=Host(`${DOMAIN}`)
+      - traefik.http.routers.traefik.service=api@internal
+      - traefik.http.routers.traefik.entrypoints=websecure
+      - traefik.http.routers.traefik.tls.certresolver=lets-encrypt
+      - traefik.http.routers.traefik.middlewares=traefik-header
+      - traefik.http.middlewares.traefik-header.headers.stsSeconds=15552000
+      - traefik.http.middlewares.traefik-header.headers.customRequestHeaders.X-Forwarded-Proto=https,wss
+      - traefik.http.routers.traefik.middlewares=traefik-auth
+      - traefik.http.middlewares.traefik-auth.basicauth.users=${AUTH_MIDDLEWARE_USER}:${AUTH_MIDDLEWARE_HASHEDPASS}
+      - traefik.http.services.traefik.loadbalancer.server.port=8080
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    external: true
