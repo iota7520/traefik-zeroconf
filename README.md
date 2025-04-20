@@ -4,7 +4,7 @@
 
 [Traefik](https://doc.traefik.io/traefik/) is a well-known open-source reverse proxy. I use this standard configuration in my homelab as well as in production environments.
 
-This setup avoids using any [configurations file](https://doc.traefik.io/traefik/reference/install-configuration/providers/others/file/)  (neither **_traefik.toml_** nor **_traefik_dynamic.toml_**). All the magic happens directly within the Traefik container.
+This setup avoids using any [configuration file](https://doc.traefik.io/traefik/reference/install-configuration/providers/others/file/)  (neither **_traefik.toml_** nor **_traefik_dynamic.toml_**). All the magic happens directly within the Traefik container.
 
 ### Prerequisites
 
@@ -29,7 +29,7 @@ This setup provides the following features:
 - Configures itself via [labels](https://doc.traefik.io/traefik/reference/install-configuration/providers/docker/#routing-configuration-with-labels) to:
   - Route requests to _traefik.example.com_ to the dashboard.
   - Use HTTPS exclusively and generate valid certificates through Let's Encrypt.
-  - Forward HTTP headers to the container.
+  - Forward relevant HTTP headers to the container.
   - Enforce HTTP Strict Transport Security (HSTS).
 
 Once set up, you can reuse these labels to manage your own containers.
@@ -70,4 +70,5 @@ git clone https://github.com/antoine75020/traefik-zeroconf.git
 cd traefik-zeroconf
 touch acme.json
 sudo chmod 600 acme.json
+docker network create traefik
 docker compose up
